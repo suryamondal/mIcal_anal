@@ -32,6 +32,7 @@ cd ..
 Compile: `mkdir -p build && cd build && cmake3 .. && make -j 4 && cd ..`
 
 Create necessary directories in needed: `simdata`, `recodata`, `digidata`, etc.
+
 Run: `./anal_ical test.log 1 0.1 1 1000` where `test.log` contains the list of input files and for the other arguments, please constult with `src/anal_ical.cc`.
 
 InputOutput:
