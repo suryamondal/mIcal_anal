@@ -68,6 +68,8 @@ public:
   TH2D* triggereffi_yevt[20];
   TH2D* strp_xmulsim_cor[20];
   TH2D* strp_ymulsim_cor[20];
+  TH2D* block_xmulsim[20][16][16];
+  TH2D* block_ymulsim[20][16][16];
 
   TH1D* hdifftime1[20];
   TH1D* hdifftime2[20];

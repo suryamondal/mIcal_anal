@@ -404,7 +404,8 @@ void MultiSimAnalysisDigi::OpenCollatedRootFile() {
   cout<<"Reading Collated Root Input file for digitization."<<endl;
   cout<<"collatedin "<<collatedIn<<endl;
   if(collatedIn) {
-    collatedRootFile = new TFile("Collated_trig6789_20180614_mical.root","read");
+    // collatedRootFile = new TFile("Collated_trig6789_20180614_mical.root","read");
+    collatedRootFile = new TFile("Collated_mIcal_trig6789_20201009.root","read");
     if(!collatedRootFile) {
       cout << "Error opening collated file !" << endl;
       exit(-1);
@@ -429,6 +430,16 @@ void MultiSimAnalysisDigi::OpenCollatedRootFile() {
 	sprintf(namex,"strp_ymulsim_cor_l%i",iki);
 	strp_ymulsim_cor[iki] = (TH2D*)collatedRootFile->Get(namex);
       }
+      for(int iki=0; iki<numberInLA; iki++) {
+	for(int ikj=0; ikj<16; ikj++) {
+	  for(int ikk=0; ikk<16; ikk++) {
+	    sprintf(namex,"strp_xmullaysim_l%i_%i_%i",iki,ikj,ikk);
+	    block_xmulsim[iki][ikj][ikk] = (TH2D*)collatedRootFile->Get(namex);
+	    sprintf(namex,"strp_ymullaysim_l%i_%i_%i",iki,ikj,ikk);
+	    block_ymulsim[iki][ikj][ikk] = (TH2D*)collatedRootFile->Get(namex);
+	  }
+	}
+      } // for(int iki=0; iki<numberInLA; iki++) {
     }
   }
 }

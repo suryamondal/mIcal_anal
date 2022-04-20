@@ -59,7 +59,7 @@ InoDigiAlg::InoDigiAlg() {
   SetTimeToDigiConv(0.1);
   SetSignalSpeed(0.15);
 
-  NewMultiplicity = 0;
+  NewMultiplicity = 1;
   
   inocal0hit_pointer = new InoCal0Hit_Manager();
   inoStripX_pointer = new InoStripX_Manager();
@@ -128,11 +128,11 @@ void InoDigiAlg::DigitiseSimData() {
     int nInLA = detid%256; //nInLA;
     detid >>=8;
     int nInDT = detid%4;
-
-    if(pAnalysis->collatedIn) {
-      CorrIneffiPar = pAnalysis->inefficiency_corx[nInLA]->GetBinContent(nInX[0]+1,nInY[0]);
-    }
-    if(gRandom->Rndm(0) < CorrIneffiPar) continue;
+    
+    // if(pAnalysis->collatedIn) {
+    //   CorrIneffiPar = pAnalysis->inefficiency_corx[nInLA]->GetBinContent(nInX[0]+1,nInY[0]+1);
+    // }
+    // if(gRandom->Rndm(0) < CorrIneffiPar) continue;
 
     int pdgid = inocal0hit_pointer->InoCal0Hit_list[ij]->GetpdgId();
     double atime = inocal0hit_pointer->InoCal0Hit_list[ij]->GetTime(); 
@@ -144,15 +144,26 @@ void InoDigiAlg::DigitiseSimData() {
     int nInT = int(atime/TimeToDigiConv); // Assuming Minimum scale of timing ~100 ps = 0.1 ns
     if (nInT < iMnT) { iMnT = nInT;} 
     if (nInT > iMxT) { iMxT = nInT;}
-
+    
     double gapX = (pargas[0] + inocal0hit_pointer->InoCal0Hit_list[ij]->GetLocalXPos() - nInX[0]*Xstrwd)/Xstrwd  - 0.5;
     double gapY = (pargas[1] + inocal0hit_pointer->InoCal0Hit_list[ij]->GetLocalYPos() - nInY[0]*Ystrwd)/Ystrwd  - 0.5;
 
     int nxmul=1;
     int nymul=1;
-    if (nInX[0] >=0 && NewMultiplicity) {
+    if(pAnalysis->collatedIn) {
+      double CorrIneffiParX = pAnalysis->inefficiency_uncx[nInLA]->GetBinContent(nInX[0]+1,nInY[0]+1);
+      double CorrIneffiParY = pAnalysis->inefficiency_uncy[nInLA]->GetBinContent(nInX[0]+1,nInY[0]+1);
+      if(gRandom->Rndm(0) < CorrIneffiParX) nInX[0] = -1;
+      if(gRandom->Rndm(0) < CorrIneffiParY) nInY[0] = -1;
+    }
+    if(nInX[0] <0 && nInY[0] <0) { continue;}
+    // cout<<"nInX[0] "<<nInX[0] <<" "<<nInY[0]<<" "<<nInLA<<endl;
+    
+    if(nInX[0] >=0 && NewMultiplicity) {
       if(pAnalysis->collatedIn) {
-	nxmul = GetRandomXY(gapX,pAnalysis->strp_xmulsim_cor[nInLA]);
+	// nxmul = GetRandomXY(gapX,pAnalysis->strp_xmulsim_cor[nInLA]);
+	nxmul = GetRandomXY(gapX,pAnalysis->block_xmulsim[nInLA][int(nInX[0]/4.)][int(nInY[0]/4.)]);
+	// cout << " something x " << nxmul << endl;
       } else {
 	double arand=gRandom->Rndm();
 	if (arand<0.1) { //10% case three strip hits
@@ -177,7 +188,9 @@ void InoDigiAlg::DigitiseSimData() {
 
     if (nInY[0] >=0 && NewMultiplicity) {
       if(pAnalysis->collatedIn) {
-	nymul = GetRandomXY(gapY,pAnalysis->strp_ymulsim_cor[nInLA]);
+	// nymul = GetRandomXY(gapY,pAnalysis->strp_ymulsim_cor[nInLA]);
+	nymul = GetRandomXY(gapY,pAnalysis->block_ymulsim[nInLA][int(nInX[0]/4.)][int(nInY[0]/4.)]);
+	// cout << " something y " << nymul << endl;
       } else {
 	double arand=gRandom->Rndm();
 	if (arand<0.1) {nymul = 3;}
@@ -195,24 +208,27 @@ void InoDigiAlg::DigitiseSimData() {
       }
     }
 
+    // cout<<"nInX[0] "<<nInX[0] <<" "<<nInY[0]<<" "<<nInLA<<endl;
+    
     for (int ix=0; ix<MxStrip; ix++) { 
       if(!NewMultiplicity && ix>0) continue;
       if (nInX[ix] <0 || nInX[ix]>=numberInX) continue;
-      if(pAnalysis->collatedIn && nInLA!=5) {
-	UnCorrXIneffiPar = pAnalysis->inefficiency_uncx[nInLA]->GetBinContent(nInX[ix]+1,nInY[0]+1);
-      }
-      if(gRandom->Rndm(0) < UnCorrXIneffiPar) continue;
 
-      double trigeffiX = 0.0;
-      if(pAnalysis->collatedIn) {
-	trigeffiX = pAnalysis->triggereffi_xevt[nInLA]->GetBinContent(nInX[ix]+1,nInY[0]+1);
-	for(int trglx=0; trglx<ntriglay; trglx++) {
-	  if((nInLA == TrgLayer[trglx]) && (gRandom->Rndm()<(trigeffiX))) {
-	    TrgDataX[TrgLayer[trglx]]++;
-	  }
-	}
-      } // if(pAnalysis->collatedIn) {
-	  
+      // if(pAnalysis->collatedIn && nInLA!=5) {
+      // 	UnCorrXIneffiPar = pAnalysis->inefficiency_uncx[nInLA]->GetBinContent(nInX[ix]+1,nInY[0]+1);
+      // }
+      // if(gRandom->Rndm(0) < UnCorrXIneffiPar) continue;
+      
+      // double trigeffiX = 0.0;
+      // if(pAnalysis->collatedIn) {
+      // 	trigeffiX = pAnalysis->triggereffi_xevt[nInLA]->GetBinContent(nInX[ix]+1,nInY[0]+1);
+      // 	for(int trglx=0; trglx<ntriglay; trglx++) {
+      // 	  if((nInLA == TrgLayer[trglx]) && (gRandom->Rndm()<(trigeffiX))) {
+      // 	    TrgDataX[TrgLayer[trglx]]++;
+      // 	  }
+      // 	}
+      // } // if(pAnalysis->collatedIn) {
+      
       G4double atimeX = tmpatimeX +  gRandom->Gaus(0,TimeUnCorrSmr);
       int nInTX = int(atimeX/TimeToDigiConv);
       int iold = 0;
@@ -295,21 +311,21 @@ void InoDigiAlg::DigitiseSimData() {
       if(!NewMultiplicity && jy>0) continue;
       if (nInY[jy] <0 || nInY[jy]>=numberInY) continue;
 
-      if(pAnalysis->collatedIn && nInLA!=5) {
-	UnCorrYIneffiPar = pAnalysis->inefficiency_uncy[nInLA]->GetBinContent(nInX[0]+1,nInY[jy]+1);
-      }
-      if(gRandom->Rndm(0) < UnCorrYIneffiPar) continue;
+      // if(pAnalysis->collatedIn && nInLA!=5) {
+      // 	UnCorrYIneffiPar = pAnalysis->inefficiency_uncy[nInLA]->GetBinContent(nInX[0]+1,nInY[jy]+1);
+      // }
+      // if(gRandom->Rndm(0) < UnCorrYIneffiPar) continue;
 
-      double trigeffiY = 0.0;
-      if(pAnalysis->collatedIn) {
-	trigeffiY = pAnalysis->triggereffi_yevt[nInLA]->GetBinContent(nInX[0]+1,nInY[jy]+1);
-	for(int trgly=0; trgly<ntriglay; trgly++) {
-	  if((nInLA == TrgLayer[trgly]) && (gRandom->Rndm()<(trigeffiY))) {
-	    TrgDataY[TrgLayer[trgly]]++;
-	  }
-	}
-      } // if(pAnalysis->collatedIn) {
-	  
+      // double trigeffiY = 0.0;
+      // if(pAnalysis->collatedIn) {
+      // 	trigeffiY = pAnalysis->triggereffi_yevt[nInLA]->GetBinContent(nInX[0]+1,nInY[jy]+1);
+      // 	for(int trgly=0; trgly<ntriglay; trgly++) {
+      // 	  if((nInLA == TrgLayer[trgly]) && (gRandom->Rndm()<(trigeffiY))) {
+      // 	    TrgDataY[TrgLayer[trgly]]++;
+      // 	  }
+      // 	}
+      // } // if(pAnalysis->collatedIn) {
+      
       G4double atimeY = tmpatimeY +  gRandom->Gaus(0,TimeUnCorrSmr);
       int nInTY = int(atimeY/TimeToDigiConv);
 	    
