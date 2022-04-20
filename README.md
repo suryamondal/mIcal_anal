@@ -34,7 +34,3 @@ cd ..
 Compile: `mkdir -p build && cd build && cmake3 .. && make -j 4 && cd ..`
 
 Run: `./anal_ical test.log 0 0.1 1000` where `test.log` contains the list of input files and for the other arguments, please constult with `src/anal_ical.cc`.
-
-*Warning:*
-- Change the parameters (i.e. `initialdir`) before submitting jobs.
-- The collated file, once read and uncompressed, occupy a lot of memory (almost 2GB). Please adjust the number of jobs per node as per the total memory available.
