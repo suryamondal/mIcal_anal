@@ -106,13 +106,13 @@ int main(int argc, char** argv) {
       if (strstr(indatafile,"#")) continue;
       if(file_db.eof()) break;
       if(InputOutput==1) {
-	sprintf(infile, "./digidata/%s_digi", indatafile);
+	sprintf(infile, "%s_digi", indatafile);
       } else if(InputOutput==2) {
-	sprintf(infile, "../rredata/%s", indatafile);
+	sprintf(infile, "%s", indatafile);
 	cout<<"ii "<<infile<<endl;
       } else {
 	// sprintf(infile, "/media/surya/Surya_5/sim01Backup/Gobinda/IICHEP/mical_20190829/%s_sim", indatafile);
-	sprintf(infile, "./simdata/%s_sim", indatafile);
+	sprintf(infile, "%s_sim", indatafile);
       }
       cout<<"infile is "<<indatafile<<endl;
       cout<<"outfile is "<<outfile<<endl;

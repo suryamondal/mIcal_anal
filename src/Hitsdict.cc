@@ -190,7 +190,7 @@ namespace {
 0
     };
     static const char* includePaths[] = {
-"/products/root/root-6.20.00/include/",
+"/products/genie/v3_0_6_sl7/ROOT6/root-6.20.04/include/",
 "/home/suryanarayan/Documents/Gobinda/IICHEP/anal_magnet_20191014_sim01/inc/",
 0
     };

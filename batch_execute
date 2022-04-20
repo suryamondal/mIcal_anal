@@ -6,13 +6,13 @@
 # evnts=220
 # datafile='corsika76300_FLUKA_SIBYLL_3dFlux_20210505_NoMagnet_22Cr'
 evnts=250
-datafile='corsika76300_FLUKA_SIBYLL_3dFlux_20210530_25Cr'
+datafile='/var/nfscondor/surya/sim/corsika76300_FLUKA_SIBYLL_3dFlux_20220105av_trg5of8_20220105aa_25Cr'
 
 for (( ij=1;ij<=$evnts;ij++ ))
 do
     foo1=$(printf "%04d" $((ij-1)))
     echo ''$datafile' 1000000 '$((((ij-1))*1000000))' ' > test.log
-    ./bin/anal_ical test.log 0 0.1 1 10000
-    echo 'mv digidata/test_digi.root digidata/test_digi_'${foo1}'.root' | sh
+    ./bin/anal_ical test.log 1 0.1 1 10000
+    echo 'mv recodata/test_reco.root recodata/test_reco_'${foo1}'.root' | sh
 done
-echo 'hadd -f digidata/'$datafile'_digi.root digidata/test_digi_*.root' | sh
+echo 'hadd -f -j 4 -d . recodata/'$datafile'_reco.root recodata/test_reco_*.root' | sh

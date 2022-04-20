@@ -14,7 +14,7 @@ project(anal_ical)
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=c++1y -m64")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=c++1y -m64")
 
 #including root
 find_package(ROOT CONFIG REQUIRED)
@@ -62,6 +62,7 @@ file(GLOB headers1 ${PROJECT_SOURCE_DIR}/inc/*.h)
 
 separate_arguments(ROOT_EXE_LINKER_FLAGS)
 add_executable(anal_ical ${headers} ${headers1} ${sources})
+# add_executable(anal_ical ${headers} ${sources})
 
 
 target_link_libraries(anal_ical PUBLIC ${ROOT_LIBRARIES} ${ROOT_EXE_LINKER_FLAGS} ${Geant4_LIBRARIES} ${PostgreSQL_LIBRARIES} config++ Geom)

@@ -13,6 +13,7 @@ DetectorParameterDef::DetectorParameterDef() {
   ParameterMessenger* detectorConfig = ParameterMessenger::AnPointer;
 
   DetectorType = detectorConfig->GetDetectorType();
+  cout<<" DetectorType "<<DetectorType<<endl;
   if(DetectorType==0) {
     icalparadef = new Ical0DetectorParameterDef();
   } else {

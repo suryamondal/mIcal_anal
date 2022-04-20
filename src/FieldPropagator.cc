@@ -57,6 +57,9 @@ FieldPropagator::FieldPropagator() {
 
   fieldxin = (TH2D*)pMagFile->Get("xyvsbxin");
   fieldyin = (TH2D*)pMagFile->Get("xyvsbyin");
+
+  fieldxin->Scale(0.85);
+  fieldyin->Scale(0.85);
   
 }
 
@@ -201,14 +204,14 @@ void FieldPropagator::F2int(int* ag_f2i, double& bx_f2i, double& by_f2i) {
   fgridy_loc[3] = fieldyin->GetBinContent(binx+1,biny+1);
   bx_f2i = bilinearInterpolation(fgridx_loc,pgrid_loc,ag_f2i);
   by_f2i = bilinearInterpolation(fgridy_loc,pgrid_loc,ag_f2i);
-  if (fabs(bx_f2i)< 2 && fabs(bx_f2i) >0) {
+  if (fabs(bx_f2i)< 2 && fabs(bx_f2i) >=0) {
     // return bx_f2i;
   } else {
     cout<<"nan  : "<< ag_f2i[0]<<" "<<ag_f2i[1] <<" "<< bx_f2i<<endl;
     bx_f2i = 0;
     // return 0;
   }
-  if (fabs(by_f2i)< 2 && fabs(by_f2i) >0) {
+  if (fabs(by_f2i)< 2 && fabs(by_f2i) >=0) {
     // return by_f2i;
   } else {
     cout<<"nan  : "<< ag_f2i[0]<<" "<<ag_f2i[1] <<" "<< by_f2i<<endl;

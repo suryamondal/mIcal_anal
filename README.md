@@ -9,9 +9,7 @@ The field file is `B_mical_hist.root`, the file name is hard-coded in `src/Field
 
 *Warning:*
 - The code has memory leakage. It may overflow memory. I do not recommend it for running more than 1M events.
-- One might need to comment out `G4DataQuestionaire` portions in `src/micalPhysicsList.cc` for later geant4 versions.
-
-Consult `batch_execute` to avoid the scenario.
+- Consult `batch_execute` to avoid the scenario.
 
 The name of the geometry file `geo_mical_world.gdml` is hard-coded in `src/anal_ical.cc`.
 
@@ -25,7 +23,7 @@ rm src/Hitsdict.cc
 rm src/HitPosdict.cc
 rm src/HitPosdict_rdict.pcm
 rm src/Hitsdict_rdict.pcm
-cd include
+cd inc
 rootcint ../src/HitPosdict.cc -c HitPos.h
 rootcint ../src/Hitsdict.cc -c Hits.h
 cd ..
@@ -33,4 +31,18 @@ cd ..
 
 Compile: `mkdir -p build && cd build && cmake3 .. && make -j 4 && cd ..`
 
-Run: `./anal_ical test.log 0 0.1 1000` where `test.log` contains the list of input files and for the other arguments, please constult with `src/anal_ical.cc`.
+Create necessary directories in needed: `simdata`, `recodata`, `digidata`, etc.
+Run: `./anal_ical test.log 1 0.1 1 1000` where `test.log` contains the list of input files and for the other arguments, please constult with `src/anal_ical.cc`.
+
+InputOutput:
+```
+0: SIM  -> DIGI
+1: DIGI -> RECO
+2: DATA -> RECO
+```
+
+Format of `test.log`: <filename><no of events><start event no>
+
+*Warning:*
+- For `SIM to DIGI`, please check the `mIcal_mc`. The colleted file and `Cal0SD` has to be updated. 
+- For `DATA to RECO`, please check the input tree if needed. 
