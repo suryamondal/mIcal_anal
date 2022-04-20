@@ -93,8 +93,9 @@ GeneralRecoInfo::~GeneralRecoInfo() {
   cout<<"Deleting GeneralRecoInfo class pointer ..."<<endl;
 }
 
-void GeneralRecoInfo::OpenRootFiles(char* outfile) {
-  sprintf(outfile,"%s.root",outfile);
+void GeneralRecoInfo::OpenRootFiles(char* outfile1) {
+  char outfile[200];
+  sprintf(outfile,"%s.root",outfile1);
   GeneralFileOut = new TFile(outfile, "RECREATE"); //VALGRIND
   if (!GeneralFileOut) {
     cout << "Error opening histogram file !" << endl;
