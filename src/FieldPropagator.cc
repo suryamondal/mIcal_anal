@@ -58,8 +58,8 @@ FieldPropagator::FieldPropagator() {
   fieldxin = (TH2D*)pMagFile->Get("xyvsbxin");
   fieldyin = (TH2D*)pMagFile->Get("xyvsbyin");
 
-  fieldxin->Scale(0.85);
-  fieldyin->Scale(0.85);
+  fieldxin->Scale(-0.85);
+  fieldyin->Scale(-0.85);
   
 }
 
