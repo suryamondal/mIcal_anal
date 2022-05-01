@@ -33,7 +33,7 @@ Compile: `mkdir -p build && cd build && cmake3 .. && make -j 4 && cd ..`
 
 Create necessary directories in needed: `simdata`, `recodata`, `digidata`, etc.
 
-Run: `./anal_ical test.log 1 0.1 1 1000` where `test.log` contains the list of input files and for the other arguments, please constult with `src/anal_ical.cc`.
+Run: `./anal_ical test_code.log 1 0.1 1 1000` where `test_code.log` contains the list of input files and for the other arguments, please constult with `src/anal_ical.cc`.
 
 InputOutput:
 ```
@@ -42,7 +42,7 @@ InputOutput:
 2: DATA -> RECO
 ```
 
-Format of `test.log`: <filename><no of events><start event no>
+Format of `test_code.log`: <filename><no of events><start event no>
 
 *Warning:*
 - For `SIM to DIGI`, please check the `mIcal_mc`. The colleted file and `Cal0SD` has to be updated. 
