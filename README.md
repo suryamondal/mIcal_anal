@@ -47,3 +47,11 @@ Format of `test.log`: <filename><no of events><start event no>
 *Warning:*
 - For `SIM to DIGI`, please check the `mIcal_mc`. The colleted file and `Cal0SD` has to be updated. 
 - For `DATA to RECO`, please check the input tree if needed. 
+  
+  ## Tracking flow
+```mermaid
+  graph TD;
+  id0[anal_ical]-->id1[InoRecoAlg.ReadEvent]-->id2[InoRecoAlg.PerformTrackReconstruction];
+  id2-->id3[InoTrackFinder.RunTheFinder]-->id4[InoTrackFitAlg.RunAlg];
+  id4-->id5[InitialFramework_new]-->id6[RunTheFitter_new]-->id7[end];
+```
