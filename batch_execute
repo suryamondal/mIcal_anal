@@ -5,7 +5,7 @@
 # datafile='corsika76300_FLUKA_SIBYLL_3dFlux_20210505_NoMagnet_2Cr'
 # evnts=220
 # datafile='corsika76300_FLUKA_SIBYLL_3dFlux_20210505_NoMagnet_22Cr'
-evnts=250
+evnts=25
 datafile='/var/nfscondor/surya/sim/corsika76300_FLUKA_SIBYLL_3dFlux_20220105av_trg5of8_20220105aa_25Cr'
 
 for (( ij=1;ij<=$evnts;ij++ ))
