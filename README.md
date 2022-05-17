@@ -53,5 +53,7 @@ Format of `test.log`: <filename><no of events><start event no>
   graph TD;
   id0[anal_ical]-->id1[InoRecoAlg.ReadEvent]-->id2[InoRecoAlg.PerformTrackReconstruction];
   id2-->id3[InoTrackFinder.RunTheFinder]-->id4[InoTrackFitAlg.RunAlg];
-  id4-->id5[InitialFramework_new]-->id6[RunTheFitter_new]-->id7[end];
+  id4-->id5[InitialFramework_new]-->id6[RunTheFitter_new];
+  id6-->id8[GetInitialCovarianceMatrix]-->id12[StoreFilteredData]-->id9[GoBackwords_new true]-->id10[ResetCovarianceMatrix];
+  id10-->id11[RemoveTrkHitsInShw]-->id14[StoreFilteredData]-->id13[GoForwards_new false]-->id15[ShowerSwim]-->id16[ResetCovarianceMatrix];
 ```
