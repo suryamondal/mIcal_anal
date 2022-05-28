@@ -59,9 +59,11 @@ file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc)
 # file(GLOB sources1 ${PROJECT_SOURCE_DIR}/src/*.pcm)
 file(GLOB headers ${PROJECT_SOURCE_DIR}/inc/*.hh)
 file(GLOB headers1 ${PROJECT_SOURCE_DIR}/inc/*.h)
+# file(GLOB headers2 ${PROJECT_SOURCE_DIR}/inc/*.cpp)
 
 separate_arguments(ROOT_EXE_LINKER_FLAGS)
 add_executable(anal_ical ${headers} ${headers1} ${sources})
+# add_executable(anal_ical ${headers} ${headers1} ${headers2} ${sources})
 # add_executable(anal_ical ${headers} ${sources})
 
 
