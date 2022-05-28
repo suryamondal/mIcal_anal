@@ -162,9 +162,12 @@ void FieldPropagator::ElectroMagneticField_mical(const double xyzc[3], double &B
   igrid[2]= (int)(grdpos[2]*mm);
 
   double local_pos1[3], local_dir1[3];
-  local_pos1[0] = xyzc[0]/10;
-  local_pos1[1] = xyzc[1]/10;
-  local_pos1[2] = xyzc[2]/10;
+  // local_pos1[0] = xyzc[0]/10;
+  // local_pos1[1] = xyzc[1]/10;
+  // local_pos1[2] = xyzc[2]/10;
+  local_pos1[0] = xyzc[0]*mm;
+  local_pos1[1] = xyzc[1]*mm;
+  local_pos1[2] = xyzc[2]*mm;
   
   local_dir1[0] = 0.0;
   local_dir1[1] = 0.0;

@@ -28,6 +28,7 @@ class micalDetectorParameterDef {
   double GetParstaircasel(int i) { return parstaircasel[i];} 
   double GetParstaircase(int i) { return parstaircase[i];} 
   double GetParino(int i) { return parino[i];}
+  double GetParmagnet(int i) { return parmagnet[i];}
   double GetShiftInX()       { return ShiftInX;} 
   double GetShiftInY()       { return ShiftInY;} 
   double GetShiftInZ(int i)       { return ShiftInZ[i];} 
@@ -152,6 +153,7 @@ private :
   float parstaircasel[3];
   float parstaircase[3];
 
+  float parmagnet[3];
   float parino[3]; //={1606.01*cm, 706.01*cm, 598.0*cm};
   //space for coil in RPC layer
   float parcoilspacerpc[3];
@@ -326,6 +328,21 @@ private :
   double ShiftInRPCX;
   double ShiftInRPCY;
   double ShiftInRPCZ;
+
+  // Scint Dimensions
+  int nScintInUnit;// = 8;
+  int nUnitTop;// = 11;
+  int nUnitWall;// = 5;
+  int nScintLayer;// = 3;
+  float ScintUnitX;// = 5.0*cm;
+  float ScintUnitY;// = 4.6*m;
+  float ScintUnitZ;// = 1*cm;
+  float AirGapScintTop;
+  float AirGapScintWall;
+  float ScintFromBottom;// = 300*mm;
+ 
+  float partopscint[3];
+  float parwallscint[3];
 
   double ShiftInX;
   double ShiftInY;

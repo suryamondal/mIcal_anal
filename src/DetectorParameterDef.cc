@@ -73,7 +73,9 @@ void DetectorParameterDef::UpdateDetectorPars() {
       parhcoil[ixi] = miniparadef->GetParhcoil(ixi);
       parcoilspacerpc[ixi] = miniparadef->GetParcoilspacerpc(ixi);
       RPCShift[ixi] = miniparadef->GetRPCShift(ixi);
-      StackShift[ixi] = miniparadef->GetStackPosInRoom(ixi) + miniparadef->GetINOroomPos(ixi);
+      // StackShift[ixi] = miniparadef->GetStackPosInRoom(ixi) + miniparadef->GetINOroomPos(ixi);
+      // StackShift[ij] = paradef->GetStackPosInRoom(ij) + paradef->GetINOroomPos(ij);
+      StackShift[ixi] = - miniparadef->GetParino(ixi) + miniparadef->GetParmagnet(ixi) + miniparadef->GetStackPosInRoom(ixi) + miniparadef->GetINOroomPos(ixi);
       // StackPosInRoom[ixi] = miniparadef->GetStackPosInRoom(ixi);
       // INOroomPos[ixi] = miniparadef->GetINOroomPos(ixi);
     }
