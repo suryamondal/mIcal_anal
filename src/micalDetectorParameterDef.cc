@@ -48,6 +48,17 @@ micalDetectorParameterDef::micalDetectorParameterDef(){
   SpacerCLength = 750.0*mm/2;
   SpacerDLength = 700.0*mm/2;
 
+  nScintInUnit = 8;
+  nUnitTop = 11;
+  nUnitWall = 5;
+  nScintLayer = 3;
+  ScintUnitX = 5.0*cm;
+  ScintUnitY = 4.6*m;
+  ScintUnitZ = 1*cm;
+  AirGapScintTop = 10*mm;;
+  AirGapScintWall = 10*mm;
+  ScintFromBottom = 300*mm;
+
   ChamberSize = 1000*mm;
   GasChamberSizeX = 870*mm; 
   GasChamberSizeY = 917.5*mm;
@@ -77,12 +88,12 @@ micalDetectorParameterDef::micalDetectorParameterDef(){
   G10TrapDY = 2.5*mm;
 
   //To calculate Shift of RPC from FRP Box Center
-  // RPCShiftX = 119*mm;
-  // RPCShiftY = 86*mm;
-  // RPCShiftZ = 9*mm;
-  RPCShift[0] = /*119*mm*/ RPCShiftX - parairbox[0] + paral[0];
-  RPCShift[1] = /*86*mm*/ RPCShiftY - parairbox[1] + paral[1];
-  RPCShift[2] = /*9*mm*/ RPCShiftZ - parfrpbox[2] + parairbox[2];
+  RPCShiftX = 119*mm;
+  RPCShiftY = 86*mm;
+  RPCShiftZ = 9*mm;
+  // RPCShift[0] = /*119*mm*/ RPCShiftX - parairbox[0] + paral[0];
+  // RPCShift[1] = /*86*mm*/ RPCShiftY - parairbox[1] + paral[1];
+  // RPCShift[2] = /*9*mm*/ RPCShiftZ - parfrpbox[2] + parairbox[2];
   
   //To calculate pos of G10Trap1 in FRPBox
   G10ShiftX1 = 92*mm;
@@ -386,11 +397,27 @@ void micalDetectorParameterDef::UpdateDetectorParameterDef(){
   parcurvedcoil[2]= CoilWidth; //31.25*cm ;
   parcurvedcoil[3]= CurvedCoilPhiMin; //0*rad ;
   parcurvedcoil[4]= CurvedCoilPhiMax; //M_PI/2*rad ;
-  
+
+  //Top Scintillator
+  partopscint[0] = nUnitTop*nScintInUnit*ScintUnitX/2;
+  partopscint[1] = ScintUnitY/2;
+  partopscint[2] = ScintUnitZ/2;
+
+  //Wall Scintillator
+  parwallscint[0] = nUnitWall*nScintInUnit*ScintUnitX/2;
+  parwallscint[1] = ScintUnitY/2;
+  parwallscint[2] = ScintUnitZ/2;
+
+
+  //Magnet
+  parmagnet[0] = parchm[0]*2 + 2*mm; // 1606.01*cm;
+  parmagnet[1] = parchm[1]*2 + 2*mm; //706.01*cm;
+  parmagnet[2] = parvcoil[2] + CurvedCoilOutRadii + 5*mm;//parairroom[2];
+
   //INO
-  parino[0] = 1.01*parchm[0]*2; // 1606.01*cm;
-  parino[1] = 1.01*parchm[1]*2; //706.01*cm;
-  parino[2] = parvcoil[2] + CurvedCoilOutRadii + 5*mm;//parairroom[2];
+  parino[0] = 1.1*(partopscint[0]+ScintUnitZ); // 1606.01*cm;
+  parino[1] = 1.1*(partopscint[1]+ScintUnitZ); //706.01*cm;
+  parino[2] = parairroom[2];//1.01*(parwallscint[0] + ScintFromBottom/2);
    
   // RPC layer
   parlay[0]=parchm[0]*2; //800.0*cm; //1600.0*cm;
@@ -454,7 +481,7 @@ void micalDetectorParameterDef::UpdateDetectorParameterDef(){
 
   StackPosInRoom[0] = 0.0*mm;
   StackPosInRoom[1] = parairroom[1] - parino[1] - 2000*mm;
-  StackPosInRoom[2] = -parairroom[2] + parino[2] + 5*mm;
+  StackPosInRoom[2] = 0.0;//-parairroom[2] + parino[2] + 5*mm;
 
   INOroomPos[0] = 0.0*mm;
   INOroomPos[1] = -parroom[1] + 2*RoomWallThickness + parairroom[1] + 2*parstaircaseair[1];
