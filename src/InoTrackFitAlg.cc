@@ -225,8 +225,10 @@ void InoTrackFitAlg::RunAlg( ) {
 	//a	cout <<"Initial fameworkr "<<endl;
 	//	GetFitData(MinPlane,MaxPlane);
 
-	RunTheFitter_new();	//VALFRIND
+	int status = RunCircleFit();
 
+	RunTheFitter_new();	//VALFRIND
+	  
 
         if (pAnalysis->ihist < pAnalysis->nhistmx-1 && ij==1 && pAnalysis->isVisOut>=2) {
           for (unsigned int i=0; i<nLayer; ++i) {
@@ -454,6 +456,7 @@ void InoTrackFitAlg::RunAlg( ) {
 
 	  // Run the high level methods
 	  InitialFramework_new();// slice,cx);
+	  int status = RunCircleFit();
 	  RunTheFitter_new();	//VALFRIND
 
 	  if (pAnalysis->ihist < pAnalysis->nhistmx-1 && ij==1 && pAnalysis->isVisOut>=2) {
@@ -680,35 +683,45 @@ void InoTrackFitAlg::ShowerStrips() {
 }
 
 
-void RunCircleFit() {
+int InoTrackFitAlg::RunCircleFit() {
 
   int entries = fTrackCand->GetEntries();
-  double<TVector3> xyzpos, xyzerr;
+  vector<TVector3> xyzpos, xyzerr;
   xyzpos.reserve(entries);
   xyzerr.reserve(entries);
-  for (unsigned ijk=entries; ijk>=0; ijk--) {
+  cout<<" entries "<<entries<<endl;
+  if(entries<=MINLAYER) {return 1;}
+  
+  for (int ijk=entries-1; ijk>=0; ijk--) {
+    // cout<<" ijk "<<ijk<<endl;
     int i = fTrackCand->ClustsInTrack[ijk]->GetZPlane();
     if (i <=int(nLayer)) {
-      if(TrkClustsData[i].size()>0) {
-	for (unsigned jk=0; jk<TrkClustsData[i].size() ;jk++) {
-	  xyzpos.push_back({TrkClustsData[i][jk].XPos,
-			    TrkClustsData[i][jk].YPos,
-			    TrkClustsData[i][jk].ZPos});
-	  xyzpos.push_back({TrkClustsData[i][jk].XPosErrSq,
-			    TrkClustsData[i][jk].YPosErrSq,
-			    0.});
-	  cout << " " << xyzpos.back().X()
-	       << " " << xyzpos.back().Y()
-	       << " " << xyzpos.back().Z()
-	       << " " << xyzerr.back().X()
-	       << " " << xyzerr.back().Y()
-	       << " " << xyzerr.back().Z()
-	       << endl;
-	} // for (unsigned jk=0; jk<TrkClustsData[i].size() ;jk++) {
-      }	  // if(TrkClustsData[i].size()>0) {
+      xyzpos.push_back({fTrackCand->ClustsInTrack[ijk]->GetXPos(),
+			fTrackCand->ClustsInTrack[ijk]->GetYPos(),
+			ZPosLayer[i]});
+      xyzerr.push_back({pow(fTrackCand->ClustsInTrack[ijk]->GetXPosErr(),2),
+			pow(fTrackCand->ClustsInTrack[ijk]->GetYPosErr(),2),
+			0.});
+      cout << " " << xyzpos.back().X()
+	   << " " << xyzpos.back().Y()
+	   << " " << xyzpos.back().Z()
+	   << " " << xyzerr.back().X()
+	   << " " << xyzerr.back().Y()
+	   << " " << xyzerr.back().Z()
+	   << endl;
     }
   }
-    
+
+  double halfLayerThickness = (ZPosLayer[1] - ZPosLayer[0])*0.5;
+
+  double pos1[3];
+  pos1[0] = xyzpos.front().X()*1000;
+  pos1[1] = xyzpos.front().Y()*1000;
+  pos1[2] = (xyzpos.front().Z() + halfLayerThickness)*1000;
+  double Bx,By;
+  pFieldMap->ElectroMagneticField( pos1, Bx,By, 0);
+  cout<<" Bx "<<Bx<<" By "<<By<<endl;
+  
   // for(int jk=0;jk<ndfi;jk++) {
   //   xyzpos.push_back(inPoints.xyzpos[ndfi-1-jk]);
   //   TVector3 xxx(inPoints.xyerr[ndfi-1-jk].X(),
@@ -852,6 +865,8 @@ void RunCircleFit() {
   // cmomFill = parMom*chargeVal;
 
 
+  return 0;
+  
 }
 
 

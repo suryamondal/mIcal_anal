@@ -61,7 +61,7 @@ class InoTrackFitAlg
 
   //  void InitialFramework(); //const CandSliceHandle* slice, CandContext &cx);
   void InitialFramework_new();
-  void RunCircleFit();
+  int RunCircleFit();
   //  void RunTheFitter(); // CandFitTrackCamHandle &cth);
   void RunTheFitter_new();
 
