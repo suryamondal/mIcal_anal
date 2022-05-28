@@ -57,3 +57,27 @@ Format of `test.log`: <filename><no of events><start event no>
   id6-->id8[GetInitialCovarianceMatrix]-->id12[StoreFilteredData]-->id9[GoBackwords_new true]-->id10[ResetCovarianceMatrix];
   id10-->id11[RemoveTrkHitsInShw]-->id14[StoreFilteredData]-->id13[GoForwards_new false]-->id15[ShowerSwim]-->id16[ResetCovarianceMatrix];
 ```
+
+  
+## Backup
+  ### In RunAlg
+  fFinderTrack is looped over ptrackCollection->InoTrack_list.
+  - InitialFramework_new -> TrkClustsData and InitTrkClustData are set here from fFinderTrack
+  - RunTheFitter_new ->
+    - GetInitialCovarianceMatrix(true)
+    - StoreFilteredData(MaxPlane)
+    - GoBackwards_new(false)
+    - ResetCovarianceMatrix()
+    - FilteredData[i].clear()
+    - StoreFilteredData(MinPlane)
+    - GoForwards_new(false)
+    - ResetCovarianceMatrix()
+    - Iteration L932
+      - GoBackwards_new(true)
+      - ResetCovarianceMatrix()
+      - StoreFilteredData(MinPlane)
+      - GoForwards_new(false)
+      - ResetCovarianceMatrix() L1037
+      - Swim(StateVector, Prediction, MaxPlane, loc_zend, GoForward) and then break
+    - FillGapsInTrack()
+    - SetTrackProperties(Prediction)
