@@ -60,13 +60,25 @@ Format of `test.log`: <filename><no of events><start event no>
 
   
 ## Backup
-  ### In RunAlg
-  fFinderTrack is looped over ptrackCollection->InoTrack_list.
-  - InitialFramework_new -> TrkClustsData and InitTrkClustData are set here from fFinderTrack
-  - RunTheFitter_new ->
-    - GetInitialCovarianceMatrix(true)
-    - StoreFilteredData(MaxPlane)
-    - GoBackwards_new(false)
+  In RunAlg
+  - fFinderTrack is looped over ptrackCollection->InoTrack_list L154
+  - fTrackCand is set to ptrackCollection->InoTrack_list[itrk]  L161
+  - InitialFramework_new -> 216
+    - TrkClustsData and InitTrkClustData are set here from fFinderTrack L556
+  - RunTheFitter_new -> L221
+    - GetInitialCovarianceMatrix(true) L683
+    - StoreFilteredData(MaxPlane)      L894
+    - GoBackwards_new(false)           L898
+      - Loop over all clusters in track L4782
+      - Swim_new(StateVector, Prediction, plane, nextplane, false, &ds, &drange) L4818
+      - GetCombiPropagator(i,NewPlane,true,&ds_gpl, &drange)                     L4710
+      - GetNoiseMatrix(i,NewPlane)
+      - ExtrapCovMatrix()
+      - CalcKalmanGain(NewPlane)
+	    - UpdateStateVector(i,NewPlane,true)
+      - UpdateCovMatrix();
+      - MoveArrays();
+      - StoreFilteredData(NewPlane);          L4725  
     - ResetCovarianceMatrix()
     - FilteredData[i].clear()
     - StoreFilteredData(MinPlane)
