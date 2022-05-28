@@ -46,7 +46,8 @@ Format of `test.log`: <filename><no of events><start event no>
 
 *Warning:*
 - For `SIM to DIGI`, please check the `mIcal_mc`. The colleted file and `Cal0SD` has to be updated. 
-- For `DATA to RECO`, please check the input tree if needed. 
+- For `DATA to RECO`, please check the input tree if needed.
+- Most of the data extension are added automatically (i.e. `_digi.root`, `_sim.root`, etc.).
   
 
 %   ## Tracking flow
