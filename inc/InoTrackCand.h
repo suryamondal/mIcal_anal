@@ -142,6 +142,14 @@ public:
   Int_t GetNFinderHits() const {return fNFinderHits;};
   void SetNFinderHits(Int_t vv) {fNFinderHits=vv;};
 
+  Double_t GetCircleRadii() const {return fCircleRadii;};
+  Double_t GetCircleMom() const {return fCircleMom;};
+  Double_t GetCircleChisq() const {return fCircleChisq;};
+
+  void SetCircleRadii(Double_t vv) {fCircleRadii = vv;};
+  void SetCircleMom(Double_t vv) {fCircleMom = vv;};
+  void SetCircleChisq(Double_t vv) {fCircleChisq = vv;};
+
   Double_t GetNewMomentum() const;
   void SetNewMomentum(Double_t);
  
@@ -228,6 +236,10 @@ public:
   Double_t fPhi;
 
   Int_t fNFinderHits;
+
+  Double_t fCircleRadii;	// in mm ?
+  Double_t fCircleMom;		// in GeV with charge
+  Double_t fCircleChisq;	// 
 
   Double_t NewTimeEndPlaneExp;
   Double_t NewTimeSlope;

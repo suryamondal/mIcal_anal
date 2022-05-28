@@ -158,6 +158,10 @@ InoTrackCand::InoTrackCand(InoTrack *trk, bool forward) :  fTrack(trk) {
 
   fNFinderHits = trk->GetEntries();
 
+  fCircleRadii  = 0;
+  fCircleMom    = 0;
+  fCircleChisq  = 0;
+
 }
 
 //______________________________________________________________________
