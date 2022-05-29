@@ -714,6 +714,7 @@ int InoTrackFitAlg::RunCircleFit() {
 			0.});
       // cout<<" "<<xyzpos.back().X()<<" "<<xyzpos.back().Y()<<" "<<xyzpos.back().Z()<<" "<<xyzerr.back().X()<<" "<<xyzerr.back().Y()<<" "<<xyzerr.back().Z()<<endl;
     }
+    if(int(xyzpos.size())>10) {break;} // limiting the arc in 1m
   }
 
   double halfLayerThickness;
