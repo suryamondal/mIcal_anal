@@ -226,6 +226,10 @@ void InoTrackFitAlg::RunAlg( ) {
 	//	GetFitData(MinPlane,MaxPlane);
 
 	int status = RunCircleFit();
+	if(!status) {
+	  x_k_minus[4] = 1./fTrackCand->GetCircleMom();
+	  // cout<<" ini mom "<<1./x_k_minus[4]<<endl;
+	}
 
 	RunTheFitter_new();	//VALFRIND
 	  
@@ -457,6 +461,10 @@ void InoTrackFitAlg::RunAlg( ) {
 	  // Run the high level methods
 	  InitialFramework_new();// slice,cx);
 	  int status = RunCircleFit();
+	  if(!status) {
+	    x_k_minus[4] = 1./fTrackCand->GetCircleMom();
+	    // cout<<" ini mom "<<1./x_k_minus[4]<<endl;
+	  }
 	  RunTheFitter_new();	//VALFRIND
 
 	  if (pAnalysis->ihist < pAnalysis->nhistmx-1 && ij==1 && pAnalysis->isVisOut>=2) {
@@ -689,12 +697,14 @@ int InoTrackFitAlg::RunCircleFit() {
   vector<TVector3> xyzpos, xyzerr;
   xyzpos.reserve(entries);
   xyzerr.reserve(entries);
-  cout<<" entries "<<entries<<endl;
+  // cout<<" entries "<<entries<<endl;
   if(entries<=MINLAYER) {return 1;}
-  
+
+  int firstPlane = 0;
   for (int ijk=entries-1; ijk>=0; ijk--) {
     // cout<<" ijk "<<ijk<<endl;
     int i = fTrackCand->ClustsInTrack[ijk]->GetZPlane();
+    if(!firstPlane) {firstPlane = i;}
     if (i <=int(nLayer)) {
       xyzpos.push_back({fTrackCand->ClustsInTrack[ijk]->GetXPos(),
 			fTrackCand->ClustsInTrack[ijk]->GetYPos(),
@@ -702,168 +712,108 @@ int InoTrackFitAlg::RunCircleFit() {
       xyzerr.push_back({pow(fTrackCand->ClustsInTrack[ijk]->GetXPosErr(),2),
 			pow(fTrackCand->ClustsInTrack[ijk]->GetYPosErr(),2),
 			0.});
-      cout << " " << xyzpos.back().X()
-	   << " " << xyzpos.back().Y()
-	   << " " << xyzpos.back().Z()
-	   << " " << xyzerr.back().X()
-	   << " " << xyzerr.back().Y()
-	   << " " << xyzerr.back().Z()
-	   << endl;
+      // cout<<" "<<xyzpos.back().X()<<" "<<xyzpos.back().Y()<<" "<<xyzpos.back().Z()<<" "<<xyzerr.back().X()<<" "<<xyzerr.back().Y()<<" "<<xyzerr.back().Z()<<endl;
     }
   }
 
-  double halfLayerThickness = (ZPosLayer[1] - ZPosLayer[0])*0.5;
+  double halfLayerThickness;
+  if(xyzpos[0].Z()>xyzpos[1].Z()) {
+    halfLayerThickness = (ZPosLayer[firstPlane] - ZPosLayer[firstPlane-1])*0.5;
+  } else {
+    halfLayerThickness = (ZPosLayer[firstPlane-1] - ZPosLayer[firstPlane])*0.5;
+  }
+  // cout<<" halfLayerThickness "<<halfLayerThickness<<endl;
 
   double pos1[3];
   pos1[0] = xyzpos.front().X()*1000;
   pos1[1] = xyzpos.front().Y()*1000;
-  pos1[2] = (xyzpos.front().Z() + halfLayerThickness)*1000;
-  double Bx,By;
-  pFieldMap->ElectroMagneticField( pos1, Bx,By, 0);
-  cout<<" Bx "<<Bx<<" By "<<By<<endl;
-  
-  // for(int jk=0;jk<ndfi;jk++) {
-  //   xyzpos.push_back(inPoints.xyzpos[ndfi-1-jk]);
-  //   TVector3 xxx(inPoints.xyerr[ndfi-1-jk].X(),
-  // 		 inPoints.xyerr[ndfi-1-jk].Y(),0.);
-  //   xyzerr.push_back(xxx);
-  //   // cout << " " << jk
-  //   //      << " " << xyzpos[jk].X()/strpwidth
-  //   //      << " " << xyzpos[jk].Y()/strpwidth
-  //   //      << " " << xyzpos[jk].Z()/strpwidth
-  //   //      << " " << xyzerr[jk].X()
-  //   //      << " " << xyzerr[jk].Y()
-  //   //      << " " << xyzerr[jk].Z()
-  //   //      << endl;
-  //   if(jk>1 &&
-  //      // calPointDist(xyzpos[0],xyzpos[jk])>circleLen) {
-  //      calPointDist(xyzpos[0],xyzpos[jk])>=calPointDist(xyzpos[0],xyzpos[1])*circlePt*1.1) {
-  //     break;}
-  // }
-  // const int ndfi3 = int(xyzpos.size());
-  // // cout<<" ndfi3 "<<ndfi3<<endl;
-	       
-  // TVector3 MomIniDir(xyzpos[1].X()-xyzpos[0].X(),
-  // 		     xyzpos[1].Y()-xyzpos[0].Y(),
-  // 		     xyzpos[1].Z()-xyzpos[0].Z());
-  // MomIniDir *= 1./MomIniDir.Mag();
-  // // cout << " MomIniDir " << MomIniDir.X()
-  // //      << " " << MomIniDir.Y()
-  // //      << " " << MomIniDir.Z() << endl;
-	       
-  // TVector3 MagField = GetMagneticField(xyzpos[0].X(),
-  // 				       xyzpos[0].Y(),
-  // 				       xyzpos[0].Z()+(airGap+ironThickness)*0.5);
-  // // cout << " MagField " << MagField.X()
-  // //      << " " << MagField.Y()
-  // //      << " " << MagField.Z() << endl;
+  pos1[2] = (xyzpos.front().Z() - halfLayerThickness)*1000;
+  double Bx, By;
+  pFieldMap->ElectroMagneticField( pos1, Bx,By, 0); // in gaus
+  // cout<<" Bx "<<Bx<<" By "<<By<<endl;
+
+  TVector3 MomIniDir(xyzpos[1].X()-xyzpos[0].X(),
+  		     xyzpos[1].Y()-xyzpos[0].Y(),
+  		     xyzpos[1].Z()-xyzpos[0].Z());
+  MomIniDir *= 1./MomIniDir.Mag();
+  // cout<<" MomIniDir "<<MomIniDir.Theta()*TMath::RadToDeg()<<" "<<MomIniDir.Phi()*TMath::RadToDeg()<<endl;
+
+  TVector3 MagField(Bx/tesla, By/tesla, 0.);
+  // cout <<" MagField "<<MagField.X()<<" "<<MagField.Y()<<" "<<MagField.Z()<<endl;
+  if(!MagField.Mag()) {return 3;}
 	
-  // TVector3 MomAlongMagField = MomIniDir;
-  // MomAlongMagField.RotateUz(MagField.Unit());
-  // double pZ = MomAlongMagField.Z();
-  // double pT = MomAlongMagField.Perp();
-  // // cout << " pZ " << pZ << " pT " << pT << endl;
-	       
-  // TVector3 forceDirection = MomIniDir.Cross(MagField); // F = Q*PxB
-  // double rotAngle = -forceDirection.Phi();
-  // forceDirection.RotateZ(rotAngle); // Rotating around Z, making Y component zero
-  // // cout << " rotAngle " << rotAngle*180./TMath::Pi() << endl;
-  // // cout << " forceDirection " << forceDirection.X()
-  // //      << " " << forceDirection.Y()
-  // //      << " " << forceDirection.Z() << endl;
-	       
-  // for(int jk=0;jk<ndfi3;jk++) {
-  //   xyzpos[jk].RotateZ(rotAngle);
-  //   xyzerr[jk].RotateZ(rotAngle);
-  //   // cout << " " << jk
-  //   //      << " " << xyzpos[jk].X()/strpwidth
-  //   //      << " " << xyzpos[jk].Y()/strpwidth
-  //   //      << " " << xyzpos[jk].Z()/strpwidth
-  //   //      << " " << xyzerr[jk].X()
-  //   //      << " " << xyzerr[jk].Y()
-  //   //      << " " << xyzerr[jk].Z()
-  //   //      << endl;
-  // }
+  TVector3 MomAlongMagField = MomIniDir;
+  MomAlongMagField.RotateUz(MagField.Unit());
+  double pZ = MomAlongMagField.Z();
+  double pT = MomAlongMagField.Perp();
+  // cout<<" pZ "<<pZ<<" pT "<<pT<<endl;
 
+  TVector3 forceDirection = MomIniDir.Cross(MagField); // F = Q*PxB
+  // cout<<" forceDirection 0 "<<forceDirection.Theta()*TMath::RadToDeg()<<" "<<forceDirection.Phi()*TMath::RadToDeg()<<endl;
+  double rotAngle = -forceDirection.Phi();
+  forceDirection.RotateZ(rotAngle); // Rotating around Z, making Y component zero
+  // cout<<" rotAngle "<<rotAngle*TMath::RadToDeg()<<endl;
+  // cout<<" forceDirection 1 "<<forceDirection.Theta()*TMath::RadToDeg()<<" "<<forceDirection.Phi()*TMath::RadToDeg()<<endl;
+  
+  for(int jk=0;jk<entries;jk++) {
+    xyzpos[jk].RotateZ(rotAngle);
+    xyzerr[jk].RotateZ(rotAngle);
+    // cout<<" "<<jk<<" "<<xyzpos[jk].X()<<" "<<xyzpos[jk].Y()<<" "<<xyzpos[jk].Z()<<" "<<xyzerr[jk].X()<<" "<<xyzerr[jk].Y()<<" "<<xyzerr[jk].Z()<<endl;
+  }
 
-  // vector<double> DataX3, DataY3, ErrY3;
-  // DataX3.reserve(entries);
-  // DataY3.reserve(entries);
-  // ErrY3.reserve(entries);
-    
-  // for(int jk=0;jk<ndfi3;jk++) {
-  //   DataX3[jk] = xyzpos[jk].Z();
-  //   DataY3[jk] = xyzpos[jk].X();
-  //   ErrY3[jk]  = fabs(xyzerr[jk].X());
-  //   // cout << " " << jk << " " << DataX[jk] << " " << DataY[jk] << endl;
-  // }
-  // reals LambdaIni3=0.00001;
-  // Data data13(ndfi3,DataX3,DataY3,ErrY3);
-  // // Circle circle3,circleIni3(0.5,DataY3[0],2.);
-  // // int codet = CircleFitByChernovLesort(data13,circleIni3,LambdaIni3,circle3);
-  // // if(codet!=0) {continue;}
-  // // cout<<" "<<iev<<" cradii "<<circle3.r<<" "<<circle3.a/strpwidth<<" "<<circle3.b/strpwidth<<" s "<<circle3.s<<endl;
-  // // double cradii3 = circle3.r;
-  // // double ca3 = circle3.a;
-  // // double cb3 = circle3.b;
-	       
-  // double ttang = atan(-(DataX3[0]-DataX3[ndfi3-1])/(DataY3[0]-DataY3[ndfi3-1]));
-  // Circle circle31,circleIni31(0.5*(DataX3[0]+DataX3[ndfi3-1])+4.*cos(ttang),0.5*(DataY3[0]+DataY3[ndfi3-1])+4.*sin(ttang),4.);
-  // int code31 = CircleFitByChernovLesort(data13,circleIni31,LambdaIni3,circle31);
-  // Circle circle32,circleIni32(0.5*(DataX3[0]+DataX3[ndfi3-1])-4.*cos(ttang),0.5*(DataY3[0]+DataY3[ndfi3-1])-4.*sin(ttang),4.);
-  // int code32 = CircleFitByChernovLesort(data13,circleIni32,LambdaIni3,circle32);
-	       
-  // // if(fabs(circle31.s-circle32.s)>0.0001) {
-  // // 	 cout<<" "<<iev<<endl;
-  // // 	 cout<<" circle31 "<<circle31.r<<" "<<circle31.a/strpwidth<<" "<<circle31.b/strpwidth<<" s "<<circle31.s<<endl;
-  // // 	 cout<<" circle32 "<<circle32.r<<" "<<circle32.a/strpwidth<<" "<<circle32.b/strpwidth<<" s "<<circle32.s<<endl;
-  // // }
-	       
-  // int codet = (circle31.s<circle32.s)?code31:code32;
-  // if(codet!=0) {continue;}
-	       
-  // double cradii3 = (circle31.s<circle32.s)?circle31.r:circle32.r;
-  // double ca3 = (circle31.s<circle32.s)?circle31.a:circle32.a;
-  // double cb3 = (circle31.s<circle32.s)?circle31.b:circle32.b;
-  // double cs3 = (circle31.s<circle32.s)?circle31.s:circle32.s;
-  // // cout<<" "<<iev<<" cradii "<<cradii3<<" "<<ca3/strpwidth<<" "<<cb3/strpwidth<<" s "<<cs3<<endl;
-	       
-  // double pXZ = 0.3*uniformField*cradii3;
-  // double parMom = pXZ*sqrt(1. + (pZ/pT)*(pZ/pT));
-  // // cout<<" "<<iev<<" pXZ "<<pXZ<<" parMom "<<parMom<<endl;
-  // MomIniDir.SetMag(parMom);
-	       
-  // // TVector3 startPt(xyzpos.back().X()-cb3,
-  // // 		 0.,xyzpos.back().Z()-ca3);
-  // // TVector3   endPt(xyzpos.front().X()-cb3,
-  // // 		 0.,xyzpos.front().Z()-ca3);
-  // // double skangle = endPt.Angle(startPt);
-  // // cout << " " << iev
-  // //      << " skangle " << skangle*180./TMath::Pi()
-  // //      << endl;
-	       
-  // TVector3   endPt(xyzpos.back().X()-cb3,
-  // 		   xyzpos.back().Z()-ca3,0.);
-  // TVector3 startPt(xyzpos.front().X()-cb3,
-  // 		   xyzpos.front().Z()-ca3,0.);
-  // double skangle = endPt.Phi()-startPt.Phi();
-  // // cout << " 0 " << iev
-  // //      << " skangle " << skangle*180./TMath::Pi()
-  // //      << endl;
-  // if(skangle<-TMath::Pi()) {
-  //   skangle += 2.*TMath::Pi();
-  // } else if(skangle>TMath::Pi()) {
-  //   skangle -= 2.*TMath::Pi();}
-  // // cout << " 1 " << iev
-  // //      << " skangle " << skangle*180./TMath::Pi()
-  // //      << endl;
-  // int chargeVal = skangle>0.?1.:-1.;
-  // // cout<<" chargeVal "<<chargeVal<<endl;
-	       
-  // csFill = cs3;
-  // crFill = cradii3;
-  // cmomFill = parMom*chargeVal;
+  vector<double> DataX3, DataY3, ErrY3;
+  DataX3.reserve(entries);
+  DataY3.reserve(entries);
+  ErrY3.reserve(entries);
+  for(int jk=0;jk<entries;jk++) {
+    DataX3.push_back(xyzpos[jk].Z());
+    DataY3.push_back(xyzpos[jk].X());
+    ErrY3.push_back(fabs(xyzerr[jk].X()));
+    // cout<<" "<<jk<<" "<<DataX3[jk]<<" "<<DataY3[jk]<<endl;
+  }
+  reals LambdaIni3=0.00001;
+  Data data13(DataX3,DataY3,ErrY3);
 
+  double ttang = atan(-(DataX3[0]-DataX3[entries-1])/(DataY3[0]-DataY3[entries-1]));
+  Circle circle31,circleIni31(0.5*(DataX3[0]+DataX3[entries-1])+4.*cos(ttang),0.5*(DataY3[0]+DataY3[entries-1])+4.*sin(ttang),4.);
+  int code31 = CircleFitByChernovLesort(data13,circleIni31,LambdaIni3,circle31);
+  Circle circle32,circleIni32(0.5*(DataX3[0]+DataX3[entries-1])-4.*cos(ttang),0.5*(DataY3[0]+DataY3[entries-1])-4.*sin(ttang),4.);
+  int code32 = CircleFitByChernovLesort(data13,circleIni32,LambdaIni3,circle32);
+
+  int codet = (circle31.s<circle32.s)?code31:code32;
+  if(codet!=0) {return 2;}
+
+  double cradii3 = (circle31.s<circle32.s)?circle31.r:circle32.r;
+  double ca3 = (circle31.s<circle32.s)?circle31.a:circle32.a;
+  double cb3 = (circle31.s<circle32.s)?circle31.b:circle32.b;
+  double cs3 = (circle31.s<circle32.s)?circle31.s:circle32.s;
+  // cout<<" cradii "<<cradii3<<" "<<ca3<<" "<<cb3<<" s "<<cs3<<endl;
+
+  double pXZ = 0.3*MagField.Mag()*cradii3;
+  double parMom = pXZ*sqrt(1. + (pZ/pT)*(pZ/pT));
+  // cout<<" "<<" pXZ "<<pXZ<<" parMom "<<parMom<<endl;
+  
+  TVector3   endPt(xyzpos.back().X()-cb3,
+  		   xyzpos.back().Z()-ca3,0.);
+  TVector3 startPt(xyzpos.front().X()-cb3,
+  		   xyzpos.front().Z()-ca3,0.);
+  double skangle = endPt.Phi()-startPt.Phi();
+  // cout<<" 0 skangle "<<skangle*TMath::RadToDeg()<<endl;
+  if(skangle<-TMath::Pi()) {
+    skangle += 2.*TMath::Pi();
+  } else if(skangle>TMath::Pi()) {
+    skangle -= 2.*TMath::Pi();}
+  // cout<<" 1 skangle "<<skangle*TMath::RadToDeg()<<endl;
+  int chargeVal = skangle>0.?1.:-1.;
+  // cout<<" chargeVal "<<chargeVal<<endl;
+  
+  double csFill = cs3;
+  double crFill = cradii3;
+  double cmomFill = parMom*chargeVal;
+
+  fTrackCand->SetCircleRadii(crFill);
+  fTrackCand->SetCircleMom(cmomFill);
+  fTrackCand->SetCircleChisq(csFill);
 
   return 0;
   

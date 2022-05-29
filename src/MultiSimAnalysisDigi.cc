@@ -213,6 +213,8 @@ void MultiSimAnalysisDigi::OpenOutputRootFiles(char* outfile) {
     pEventTree->Branch("nhits_finder",nhits_finder,"nhits_finder[ntrkt]/I");
     pEventTree->Branch("chisq",chisq,"chisq[ntrkt]/F");
     pEventTree->Branch("cvalue",cvalue,"cvalue[ntrkt]/F");
+    pEventTree->Branch("trkcmom",trkcmom,"trkcmom[ntrkt]/F");
+    pEventTree->Branch("trkcs",trkcs,"trkcs[ntrkt]/F");
     pEventTree->Branch("trkmm",trkmm,"trkmm[ntrkt]/F");
     pEventTree->Branch("trkth",trkth,"trkth[ntrkt]/F");
     pEventTree->Branch("trkph",trkph,"trkph[ntrkt]/F");

@@ -540,6 +540,8 @@ void InoRecoAlg::PerformHadronReconstruction() {
 }
 
 void InoRecoAlg::SaveRecoDataToRootFiles(int iTrackNum, InoTrackCand* pfittedTrack) {
+  pAnalysis->trkcmom[iTrackNum] =  pfittedTrack->GetCircleMom();
+  pAnalysis->trkcs[iTrackNum] =  pfittedTrack->GetCircleChisq();
   pAnalysis->itype[iTrackNum] =  pfittedTrack->GetFitType();
   pAnalysis->nhits[iTrackNum] = (pfittedTrack->GetNDOF()+5)/2;
   pAnalysis->chisq[iTrackNum] =  pfittedTrack->GetChi2();

@@ -284,6 +284,8 @@ public:
   Float_t         chisq[ntrkmx];   //[ntrkt]
   Float_t         cvalue[ntrkmx];   //[ntrkt]
   Int_t           fc_or_pc[ntrkmx];   //[ntrkt]
+  Float_t         trkcmom[ntrkmx];   //[ntrkt]
+  Float_t         trkcs[ntrkmx];   //[ntrkt]
   Float_t         trkmm[ntrkmx];   //[ntrkt]
   Float_t         trkth[ntrkmx];   //[ntrkt]
   Float_t         trkph[ntrkmx];   //[ntrkt]
